@@ -34,3 +34,8 @@ Route::post('/cadastro/profissional', function (Request $request) {
     // Aqui você pode tratar os dados recebidos
     dd($request->all()); // só para teste
 })->name('profissional.store');
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');
+
