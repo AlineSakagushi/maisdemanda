@@ -45,11 +45,12 @@
                 <div class="flex items-center space-x-3">
                     <h1 class="text-3xl font-bold text-blue-600">Demanda+</h1>
                 </div>
-                <nav class="hidden md:flex space-x-6">
-                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Serviços</a>
-                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Profissionais</a>
-                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Contato</a>
-                </nav>
+                <nav class="hidden md:flex items-center space-x-4">
+    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors font-medium">Desejo contratar</a>
+    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors font-medium">Desejo trabalhar</a>
+    <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">Login</a>
+</nav>
+
             </div>
         </div>
     </header>
