@@ -22,3 +22,11 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::get('/teste', function () {
+    return view('teste');
+});
+
+Route::get('/', function () {
+    return view('home');
+});
