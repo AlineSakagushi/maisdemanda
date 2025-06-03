@@ -46,7 +46,7 @@ class ServiceRequestController extends Controller
 
         $serviceRequest->delete();
 
-        return redirect()->route('service-requests.index')
+        return redirect()->route('dashboard')
             ->with('success', 'Solicitação de serviço deletada com sucesso.');
     }
 
