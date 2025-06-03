@@ -2,18 +2,18 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\SolicitacaoController;
+use App\Http\Controllers\ServiceRequestController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard',[ServiceRequestController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/solicitacoes/criar', [SolicitacaoController::class, 'create'])->name('solicitacoes.create');
-Route::post('/solicitacoes', [SolicitacaoController::class, 'store'])->name('solicitacoes.store');
+Route::get('/solicitacoes/criar', [ServiceRequestController::class, 'create'])->name('solicitacoes.create');
+Route::post('/solicitacoes', [ServiceRequestController::class, 'store'])->name('solicitacoes.store');
+Route::resource('solicitacoes', ServiceRequestController::class);
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -23,6 +23,6 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-// Route::get('/', function () {
-//     return view('home');
-// });
+Route::get('/', function () {
+    return view('home');
+});

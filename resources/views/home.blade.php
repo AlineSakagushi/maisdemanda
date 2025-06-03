@@ -280,11 +280,7 @@
                 <div>
                     <h4 class="font-bold mb-4">Contato</h4>
                     <ul class="space-y-2 text-blue-200">
-<<<<<<< HEAD
-                        <li>📞 (11) 9999-9999</li>
-=======
                         <li>📞 (11) 99999-9999</li>
->>>>>>> d54a889 (Mudando a linguagem do Laravel para portugues)
                         <li>📧 contato@demandamais.com</li>
                         <li>📍 São Paulo, SP</li>
                     </ul>
@@ -343,8 +339,4 @@
     </script>
 
 </body>
-<<<<<<< HEAD
 </html>
-=======
-</html>
->>>>>>> d54a889 (Mudando a linguagem do Laravel para portugues)
