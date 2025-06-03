@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('services', function (Blueprint $table) {
             $table->id();
+            $table->string('name', 100);
+            $table->text('description')->nullable();
+            $table->foreignId('service_category_id')->nullable()->constrained('service_categories');
+            $table->decimal('price', 10, 2);
+            $table->integer('estimated_duration')->nullable(); // in minutes
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
         });
     }

@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('service_orders', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('service_request_id')->constrained('service_requests');
+            $table->foreignId('professional_id')->constrained('users');
+            $table->timestamp('created_at_custom')->useCurrent();
+            $table->enum('status', ['in_progress', 'completed', 'cancelled'])->default('in_progress');
+            $table->decimal('final_amount', 10, 2);
             $table->timestamps();
         });
     }
