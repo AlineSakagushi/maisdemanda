@@ -26,3 +26,11 @@ require __DIR__.'/auth.php';
 Route::get('/', function () {
     return view('home');
 });
+Route::get('/cadastro/profissional', function () {
+    return view('auth.register.professional');
+})->name('professional.register');
+
+Route::post('/cadastro/profissional', function (Request $request) {
+    // Aqui você pode tratar os dados recebidos
+    dd($request->all()); // só para teste
+})->name('profissional.store');
