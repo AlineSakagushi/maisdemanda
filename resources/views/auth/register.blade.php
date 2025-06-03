@@ -1,55 +1,107 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro - Demanda+</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#E3F1FF] font-sans">
 
-        <!-- Name -->
+  <!-- Cabeçalho -->
+  <header class="bg-[#98D4FB] p-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-[#0077C2]">Demanda+</h1>
+    <div class="flex items-center gap-4 text-sm">
+      <a href="#" class="hover:underline">Desejo Contratar</a>
+      <a href="#" class="hover:underline">Desejo Trabalhar</a>
+      <button class="bg-black text-white px-4 py-1 rounded-md">Login</button>
+    </div>
+  </header>
+
+  <!-- Voltar -->
+  <div class="mt-6 ml-6">
+    <button class="bg-[#98D4FB] p-2 rounded-full">
+      <span class="text-2xl">&#8592;</span>
+    </button>
+  </div>
+
+  <!-- Formulário de Cadastro -->
+  <div class="flex justify-center items-center py-8">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md text-center">
+      <h2 class="text-2xl font-semibold mb-6">CADASTRO</h2>
+      <form class="space-y-4 text-left">
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+          <label class="block mb-1 font-medium">Nome:</label>
+          <input type="text" class="w-full px-4 py-2 bg-gray-200 rounded" />
         </div>
-
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('E-mail')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div>
+          <label class="block mb-1 font-medium">CPF:</label>
+          <input type="text" class="w-full px-4 py-2 bg-gray-200 rounded" />
         </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div>
+          <label class="block mb-1 font-medium">Email:</label>
+          <input type="email" class="w-full px-4 py-2 bg-gray-200 rounded" />
         </div>
-
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+        <div>
+          <label class="block mb-1 font-medium">Senha:</label>
+          <input type="password" class="w-full px-4 py-2 bg-gray-200 rounded" />
         </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Já possui uma conta?') }}
-            </a>
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Quero me cadastrar como um profissional') }}
-            </a>
-
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
+        <div>
+          <label class="block mb-1 font-medium">Confirmar senha:</label>
+          <input type="password" class="w-full px-4 py-2 bg-gray-200 rounded" />
         </div>
-    </form>
-</x-guest-layout>
+        <div class="pt-4">
+          <button type="submit" class="w-full bg-[#0077C2] text-white py-2 rounded hover:bg-blue-600 transition">
+            CADASTRAR
+          </button>
+        </div>
+      </form>
+      <p class="mt-4 text-sm">Já tem login? <a href="#" class="text-red-500 hover:underline">Entrar</a></p>
+    </div>
+  </div>
+
+  <!-- Rodapé -->
+  <footer class="bg-[#98D4FB] text-black py-10 px-6">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 text-sm">
+      <div class="flex space-x-4">
+        <a href="#"><img src="https://img.icons8.com/ios-filled/20/x.png" alt="X"/></a>
+        <a href="#"><img src="https://img.icons8.com/ios-filled/20/instagram-new.png" alt="Instagram"/></a>
+        <a href="#"><img src="https://img.icons8.com/ios-filled/20/linkedin.png" alt="LinkedIn"/></a>
+        <a href="#"><img src="https://img.icons8.com/ios-filled/20/youtube-play.png" alt="YouTube"/></a>
+      </div>
+      <div>
+        <h4 class="font-bold mb-2">Use cases</h4>
+        <ul>
+          <li>UI design</li>
+          <li>UX design</li>
+          <li>Wireframing</li>
+          <li>Diagramming</li>
+          <li>Brainstorming</li>
+          <li>Team collaboration</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-bold mb-2">Explore</h4>
+        <ul>
+          <li>Design</li>
+          <li>Prototyping</li>
+          <li>Development features</li>
+          <li>Design systems</li>
+          <li>Figma</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-bold mb-2">Resources</h4>
+        <ul>
+          <li>Blog</li>
+          <li>Colors</li>
+          <li>Support</li>
+          <li>Developers</li>
+          <li>Resource library</li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
