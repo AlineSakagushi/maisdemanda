@@ -23,7 +23,7 @@ class ServiceTest extends TestCase
     #[Test]
     public function is_active_returns_false_when_status_is_inactive()
     {
-        $service = Service::factory()->make(['status' => 'active']);
+        $service = Service::factory()->make(['status' => 'inactive']);
         $this->assertFalse($service->isActive());
     }
 
