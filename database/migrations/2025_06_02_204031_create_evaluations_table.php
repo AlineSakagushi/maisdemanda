@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -18,7 +17,10 @@ return new class extends Migration
             $table->foreignId('client_id')->constrained('users');
             $table->foreignId('professional_id')->constrained('users');
             $table->foreignId('service_id')->constrained('services');
-            $table->decimal('rating', 2, 1);
+
+            // Inclui o CHECK diretamente aqui (SQLite aceita!)
+            $table->decimal('rating', 2, 1)->check('rating >= 0 AND rating <= 5');
+
             $table->text('comment')->nullable();
             $table->json('evaluation_criteria')->nullable();
             $table->timestamp('evaluation_date')->useCurrent();
@@ -27,8 +29,6 @@ return new class extends Migration
             $table->enum('status', ['active', 'inactive', 'hidden'])->default('active');
             $table->timestamps();
         });
-
-        DB::statement('ALTER TABLE evaluations ADD CONSTRAINT check_rating CHECK (rating >= 0 AND rating <= 5)');
     }
 
     /**
