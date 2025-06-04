@@ -38,22 +38,29 @@
 </head>
 <body class="bg-blue-100 min-h-screen flex flex-col">
 
-    <!-- Header com fundo branco -->
-    <header class="bg-white shadow-lg">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <h1 class="text-3xl font-bold text-blue-600">Demanda+</h1>
-                </div>
-                <nav class="hidden md:flex items-center space-x-4">
-    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors font-medium">Desejo contratar</a>
-    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors font-medium">Desejo trabalhar</a>
-    <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">Login</a>
-</nav>
-
+<header class="bg-white shadow-lg">
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <h1 class="text-3xl font-bold text-blue-600">Demanda+</h1>
             </div>
+            <nav class="hidden md:flex items-center space-x-4">
+
+                @guest
+                    <a href="{{ route('register') }}" class="text-gray-600 hover:text-blue-600 transition-colors font-medium">Desejo contratar</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors font-medium">Desejo trabalhar</a>
+                    <a href="{{ route('login') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">Login</a>
+                @endguest
+
+                @auth
+                    <a href="{{ route('dashboard') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">Solicitações</a>
+                @endauth
+
+            </nav>
         </div>
-    </header>
+    </div>
+</header>
+
 
     <!-- Banner Hero -->
     <section class="bg-white shadow-sm">

@@ -58,10 +58,13 @@ class ServiceRequestController extends Controller
     // Listar solicitações
     public function index()
     {
-        $services = ServiceRequest::with('service', 'client')->get();
+        $services = ServiceRequest::with('service', 'client')
+                    ->where('client_id', auth()->id())
+                    ->get();
 
         return view('dashboard', compact('services'));
     }
+
 
         public function destroy($id)
     {

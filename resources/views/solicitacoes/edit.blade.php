@@ -61,7 +61,7 @@
                 <div class="mb-4">
                     <label class="block font-medium text-sm text-gray-700" for="status">Status</label>
                     <select name="status" id="status" class="border-gray-300 rounded w-full" required>
-                        @foreach(['open', 'in_negotiation', 'closed', 'cancelled'] as $status)
+                        @foreach(['open', 'in_negotiation', 'rejected', 'cancelled'] as $status)
                             <option value="{{ $status }}" @selected(old('status', $serviceRequest->status) === $status)>{{ ucfirst($status) }}</option>
                         @endforeach
                     </select>
