@@ -6,39 +6,65 @@ use App\Models\ServiceRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Service;
-
-
+use App\Models\ServiceCategory;
 
 class ServiceRequestController extends Controller
 {
+    // Mostrar formulário de criação
     public function create()
     {
-        return view('solicitacoes.create');
+        $services = Service::all();
+        $categories = ServiceCategory::all();
+        return view('solicitacoes.create', compact('services', 'categories'));
     }
 
+    // Salvar nova solicitação
     public function store(Request $request)
     {
-        // Validação dos dados
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'category' => 'required|string',
-            'date' => 'required|date',
+            'service_category_id' => 'required|integer',
+            'expected_budget' => 'required|numeric|min:0',
+            'desired_date' => 'required|date',
+            'status' => 'required|string|max:50',
+            'urgency' => 'nullable|string|max:50',
         ]);
 
-         $validated['client_id'] = Auth::id();
-        // Salvar no banco
-        ServiceRequest::create($validated);
+        // Criar um serviço básico vinculado à solicitação
+        $service = Service::create([
+            'service_category_id' => $validated['service_category_id'],
+            'price' => $validated['expected_budget'],
+            'status' => 'active',
+        ]);
 
-        return redirect()->route('solicitacoes.create')->with('success', 'Solicitação enviada com sucesso!');
+        // Criar a solicitação de serviço
+        ServiceRequest::create([
+            'client_id' => Auth::id(),
+            'service_id' => $service->id,
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'expected_budget' => $validated['expected_budget'],
+            'desired_date' => $validated['desired_date'],
+            'urgency' => $validated['urgency'] ?? null,
+            'status' => $validated['status'],
+            'request_date' => now(),
+        ]);
+
+        return redirect()->route('dashboard')
+            ->with('success', 'Solicitação criada com sucesso!');
     }
 
+    // Listar solicitações
     public function index()
     {
-        $services = ServiceRequest::with('service', 'client')->get();
+        $services = ServiceRequest::with('service', 'client')
+                    ->where('client_id', auth()->id())
+                    ->get();
 
         return view('dashboard', compact('services'));
     }
+
 
         public function destroy($id)
     {
@@ -54,29 +80,41 @@ class ServiceRequestController extends Controller
     public function edit($id)
     {
         $serviceRequest = ServiceRequest::findOrFail($id);
-        $services = Service::all(); // Buscar todos os serviços para popular o select
+        $categories = ServiceCategory::all();
 
-        return view('solicitacoes.edit', compact('serviceRequest', 'services'));
+        return view('solicitacoes.edit', compact('serviceRequest', 'categories'));
     }
 
-
-    // Atualizar o registro
+    // Atualizar uma solicitação
     public function update(Request $request, $id)
     {
         $serviceRequest = ServiceRequest::findOrFail($id);
 
-        $validatedData = $request->validate([
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'category' => 'required|string',
+            'description' => 'required|string',
+            'service_category_id' => 'required|integer',
             'expected_budget' => 'required|numeric|min:0',
             'desired_date' => 'required|date',
-            'status' => 'required|string', // ajuste conforme seus status
+            'status' => 'required|string|max:50',
             'urgency' => 'nullable|string|max:50',
-            // outros campos que desejar validar...
         ]);
 
-        $serviceRequest->update($validatedData);
+        // Atualizar o serviço vinculado, se necessário
+        $serviceRequest->service->update([
+            'service_category_id' => $validated['service_category_id'],
+            'price' => $validated['expected_budget'],
+        ]);
+
+        // Atualizar a solicitação
+        $serviceRequest->update([
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'expected_budget' => $validated['expected_budget'],
+            'desired_date' => $validated['desired_date'],
+            'urgency' => $validated['urgency'] ?? null,
+            'status' => $validated['status'],
+        ]);
 
         return redirect()->route('dashboard')
             ->with('success', 'Solicitação atualizada com sucesso!');

@@ -38,22 +38,29 @@
 </head>
 <body class="bg-blue-100 min-h-screen flex flex-col">
 
-    <!-- Header com fundo branco -->
-    <header class="bg-white shadow-lg">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <h1 class="text-3xl font-bold text-blue-600">Demanda+</h1>
-                </div>
-                <nav class="hidden md:flex items-center space-x-4">
-    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors font-medium">Desejo contratar</a>
-    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors font-medium">Desejo trabalhar</a>
-    <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">Login</a>
-</nav>
-
+<header class="bg-white shadow-lg">
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <h1 class="text-3xl font-bold text-blue-600">Demanda+</h1>
             </div>
+            <nav class="hidden md:flex items-center space-x-4">
+
+                @guest
+                    <a href="{{ route('register') }}" class="text-gray-600 hover:text-blue-600 transition-colors font-medium">Desejo contratar</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors font-medium">Desejo trabalhar</a>
+                    <a href="{{ route('login') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">Login</a>
+                @endguest
+
+                @auth
+                    <a href="{{ route('dashboard') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">Solicitações</a>
+                @endauth
+
+            </nav>
         </div>
-    </header>
+    </div>
+</header>
+
 
     <!-- Banner Hero -->
     <section class="bg-white shadow-sm">
@@ -261,45 +268,7 @@
     </main>
 
     <!-- Footer-->
-    <footer class="bg-blue-600 text-white">
-        <div class="container mx-auto px-6 py-8">
-            <div class="grid md:grid-cols-4 gap-8">
-                <div>
-                    <div class="flex items-center space-x-2 mb-4">
-                        <h3 class="text-xl font-bold">Demanda+</h3>
-                    </div>
-                    <p class="text-blue-200">Conectando você aos melhores profissionais da sua região com qualidade e confiança.</p>
-                </div>
-                <div>
-                    <h4 class="font-bold mb-4">Serviços</h4>
-                    <ul class="space-y-2 text-blue-200">
-                        <li><a href="#" class="hover:text-white transition-colors">Técnicos</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Limpeza</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Manutenção</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold mb-4">Contato</h4>
-                    <ul class="space-y-2 text-blue-200">
-                        <li>📞 (11) 99999-9999</li>
-                        <li>📧 contato@demandamais.com</li>
-                        <li>📍 São Paulo, SP</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold mb-4">Redes Sociais</h4>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-blue-200 hover:text-white transition-colors text-xl">📘</a>
-                        <a href="#" class="text-blue-200 hover:text-white transition-colors text-xl">📷</a>
-                        <a href="#" class="text-blue-200 hover:text-white transition-colors text-xl">📱</a>
-                    </div>
-                </div>
-            </div>
-            <div class="border-t border-blue-400 mt-8 pt-6 text-center">
-                <p class="text-blue-200">© 2025 Demanda+. Todos os direitos reservados. Conectando pessoas e soluções.</p>
-            </div>
-        </div>
-    </footer>
+<x-footer />
 
     <script>
         // Adicionar interatividade

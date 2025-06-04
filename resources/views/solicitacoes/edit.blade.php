@@ -33,13 +33,19 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block font-medium text-sm text-gray-700" for="category">Serviço</label>
-                    <select name="category" id="category" class="border-gray-300 rounded w-full" required>
-                        <option value="">Selecione um serviço</option>
-                        @foreach (['Encanador', 'Eletricista', 'Carpinteiro'] as $service)
-                            <option value="{{ $service}}" @selected(old('service', $serviceRequest->service) == $service)>{{ $service }}</option>
+                <div class="flex-1">
+                    <label class="block font-medium mb-1">Categoria</label>
+                    <select 
+                        name="service_category_id" 
+                        class="w-full border rounded p-2 shadow-sm" 
+                        required
+                    >
+                        <option disabled selected>Selecione...</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->name }}</option>
                         @endforeach
                     </select>
+                </div>
                 </div>
 
                 <div class="mb-4">
@@ -55,7 +61,7 @@
                 <div class="mb-4">
                     <label class="block font-medium text-sm text-gray-700" for="status">Status</label>
                     <select name="status" id="status" class="border-gray-300 rounded w-full" required>
-                        @foreach(['open', 'in_negotiation', 'closed', 'cancelled'] as $status)
+                        @foreach(['open', 'in_negotiation', 'rejected', 'cancelled'] as $status)
                             <option value="{{ $status }}" @selected(old('status', $serviceRequest->status) === $status)>{{ ucfirst($status) }}</option>
                         @endforeach
                     </select>

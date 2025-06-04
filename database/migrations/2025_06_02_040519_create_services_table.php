@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->foreignId('service_category_id')->nullable()->constrained('service_categories');
             $table->decimal('price', 10, 2);
-            $table->integer('estimated_duration')->nullable(); // in minutes
+            $table->integer('estimated_duration')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
         });
