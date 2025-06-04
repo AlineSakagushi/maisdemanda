@@ -116,18 +116,4 @@ class ServiceRequestController extends Controller
         return redirect()->route('dashboard')
             ->with('success', 'Solicitação atualizada com sucesso!');
     }
-
-    // Deletar uma solicitação
-    public function destroy($id)
-    {
-        $serviceRequest = ServiceRequest::findOrFail($id);
-
-        // Também deleta o serviço vinculado, se desejar
-        $serviceRequest->service()->delete();
-
-        $serviceRequest->delete();
-
-        return redirect()->route('dashboard')
-            ->with('success', 'Solicitação deletada com sucesso.');
-    }
 }

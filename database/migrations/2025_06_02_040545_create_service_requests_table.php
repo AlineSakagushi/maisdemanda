@@ -13,9 +13,12 @@ return new class extends Migration
     {
         Schema::create('service_requests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->constrained('users');
-            $table->foreignId('service_id')->constrained('services')->nullable();
 
+            // Foreign keys
+            $table->foreignId('client_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('service_id')->nullable()->constrained('services')->onDelete('cascade');
+
+            // Dados da solicitação
             $table->string('title');
             $table->text('description')->nullable();
             $table->decimal('expected_budget', 10, 2)->nullable();
@@ -25,17 +28,20 @@ return new class extends Migration
             $table->enum('urgency', ['low', 'medium', 'high'])->default('medium');
             $table->json('additional_details')->nullable();
 
-            $table->enum('status', ['open', 'in_negotiation', 'accepted', 'rejected', 'cancelled', 'expired'])
-                ->default('open');
+            $table->enum('status', [
+                'open', 
+                'in_negotiation', 
+                'accepted', 
+                'rejected', 
+                'cancelled', 
+                'expired'
+            ])->default('open');
 
             $table->timestamp('request_date')->useCurrent();
             $table->timestamp('response_date')->nullable();
             $table->timestamp('expiration_date')->nullable();
 
             $table->timestamps();
-            $table->foreignId('service_id')->constrained('services')->onDelete('cascade');
-            $table->foreignId('client_id')->constrained('users')->onDelete('cascade');
-
         });
     }
 
@@ -46,5 +52,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('service_requests');
     }
-    
 };
