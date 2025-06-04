@@ -33,6 +33,9 @@ return new class extends Migration
             $table->timestamp('expiration_date')->nullable();
 
             $table->timestamps();
+            $table->foreignId('service_id')->constrained('services')->onDelete('cascade');
+            $table->foreignId('client_id')->constrained('users')->onDelete('cascade');
+
         });
     }
 
@@ -43,4 +46,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('service_requests');
     }
+    
 };

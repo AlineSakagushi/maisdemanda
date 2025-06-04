@@ -33,13 +33,19 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block font-medium text-sm text-gray-700" for="category">Serviço</label>
-                    <select name="category" id="category" class="border-gray-300 rounded w-full" required>
-                        <option value="">Selecione um serviço</option>
-                        @foreach (['Encanador', 'Eletricista', 'Carpinteiro'] as $service)
-                            <option value="{{ $service}}" @selected(old('service', $serviceRequest->service) == $service)>{{ $service }}</option>
+                <div class="flex-1">
+                    <label class="block font-medium mb-1">Categoria</label>
+                    <select 
+                        name="service_category_id" 
+                        class="w-full border rounded p-2 shadow-sm" 
+                        required
+                    >
+                        <option disabled selected>Selecione...</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->name }}</option>
                         @endforeach
                     </select>
+                </div>
                 </div>
 
                 <div class="mb-4">
