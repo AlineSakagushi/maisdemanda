@@ -48,7 +48,7 @@
 
                 @guest
                     <a href="{{ route('register') }}" class="text-gray-600 hover:text-blue-600 transition-colors font-medium">Desejo contratar</a>
-                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors font-medium">Desejo trabalhar</a>
+                    <<a href="{{ route('register.professional') }}" class="text-gray-600 hover:text-blue-600 transition-colors font-medium">Desejo trabalhar</a>
                     <a href="{{ route('login') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">Login</a>
                 @endguest
 
@@ -123,9 +123,7 @@
                     <!-- Serviço 2 -->
                     <div class="service-card border rounded-xl p-6 flex gap-6 hover-scale cursor-pointer">
                         <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=150&h=150&fit=crop&crop=center" 
-                                 alt="Encanador Profissional" 
-                                 class="w-32 h-32 object-cover rounded-lg shadow-md" />
+                           <img src="./image/encanador.jpg" alt="Encanador Profissional" class="w-32 h-32 object-cover rounded-lg shadow-md" />
                             <div class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-full">Disponível</div>
                         </div>
                         <div class="flex-1">

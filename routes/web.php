@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ServiceRequestController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 
 Route::get('/dashboard',[ServiceRequestController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -17,6 +18,18 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+
+Route::get('/register/professional', [RegisteredUserController::class, 'createProfessional'])
+    ->middleware('guest')
+    ->name('register.professional');
+
+Route::post('/register/professional', [RegisteredUserController::class, 'store'])
+    ->middleware('guest')
+    ->name('register.professional.store');
+
+Route::get('/register', [RegisteredUserController::class, 'create']);
+
+
 require __DIR__.'/auth.php';
 
 Route::get('/', function () {
@@ -25,16 +38,9 @@ Route::get('/', function () {
 });
 
 Route::get('/home', function () {
-    return view('home');  // ou qualquer view que você queira mostrar na home
+    return view('home');  
 })->name('home');
 
-// Route::get('/cadastro/profissional', function () {
-//     return view('auth.register.professional');
-// })->name('professional.register');
 
-// Route::post('/cadastro/profissional', function (Request $request) {
-//     // Aqui você pode tratar os dados recebidos
-//     dd($request->all()); // só para teste
-// })->name('profissional.store');
 
 

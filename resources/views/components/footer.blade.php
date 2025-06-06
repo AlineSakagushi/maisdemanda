@@ -26,9 +26,9 @@
             <div>
                 <h4 class="font-bold mb-4">Contato</h4>
                 <ul class="space-y-2 text-blue-200">
-                    <li>📞 (11) 99999-9999</li>
+                    <li>📞 (19) 99999-9999</li>
                     <li>📧 contato@demandamais.com</li>
-                    <li>📍 São Paulo, SP</li>
+                    <li>📍 Campinas, SP</li>
                 </ul>
             </div>
 

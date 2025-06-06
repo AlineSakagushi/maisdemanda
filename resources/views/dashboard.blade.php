@@ -73,7 +73,9 @@
 
             </div>
         </div>
+        
     </div>
+    <x-footer />
 
     <style>
         @keyframes fadeIn {
