@@ -72,5 +72,6 @@
                             {{ __('Criar conta') }}
                         </a>
                     </div>
+</x-guest-layout>
                 </div>
             </form>
