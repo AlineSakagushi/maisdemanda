@@ -48,7 +48,7 @@
 
                 @guest
                     <a href="{{ route('register') }}" class="text-gray-600 hover:text-blue-600 transition-colors font-medium">Desejo contratar</a>
-                    <<a href="{{ route('register.professional') }}" class="text-gray-600 hover:text-blue-600 transition-colors font-medium">Desejo trabalhar</a>
+                    <a href="{{ route('register.professional') }}" class="text-gray-600 hover:text-blue-600 transition-colors font-medium">Desejo trabalhar</a>
                     <a href="{{ route('login') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">Login</a>
                 @endguest
 
