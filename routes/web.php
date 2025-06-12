@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DemandsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ServiceRequestController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -28,6 +29,11 @@ Route::post('/register/professional', [RegisteredUserController::class, 'store']
     ->name('register.professional.store');
 
 Route::get('/register', [RegisteredUserController::class, 'create']);
+
+
+Route::get('/demandas',[DemandsController::class, 'index'])->name('demands.list');
+
+Route::put('/demandas/{id}/aceitar', [DemandsController::class, 'accept'])->name('demands.accept');
 
 
 require __DIR__.'/auth.php';
