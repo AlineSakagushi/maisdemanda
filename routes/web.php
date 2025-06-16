@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ServiceRequestController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Middleware\CheckUserType;
+use App\Http\Controllers\AdminController;
 
 Route::get('/dashboard',[ServiceRequestController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -50,6 +51,15 @@ Route::get('/home', function () {
     return view('home');  
 })->name('home');
 
-
+Route::middleware(['auth', 'checkusertype:Admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/users', [AdminController::class, 'users'])->name('users');
+    Route::get('/service-requests', [AdminController::class, 'serviceRequests'])->name('service-requests');
+    Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
+    
+    // Ações de gerenciamento
+    Route::patch('/users/{user}/status', [AdminController::class, 'updateUserStatus'])->name('users.update-status');
+    Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.delete');
+});
 
 

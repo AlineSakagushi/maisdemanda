@@ -2,8 +2,7 @@
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
-        <!-- Define o tipo de usuário como "Professional" -->
-        <input type="hidden" name="user_type" value="Professional">
+        <input type="hidden" name="user_type" value="Client">
 
         <!-- Name -->
         <div>
