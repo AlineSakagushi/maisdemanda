@@ -62,4 +62,8 @@ Route::middleware(['auth', 'checkusertype:Admin'])->prefix('admin')->name('admin
     Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.delete');
 });
 
-
+Route::post('/notificacoes/{id}/marcar-como-lida', function ($id) {
+    $notificacao = \App\Models\Notification::where('user_id', auth()->id())->findOrFail($id);
+    $notificacao->update(['read' => true, 'read_at' => now()]);
+    return back();
+})->name('notificacoes.marcar-como-lida');

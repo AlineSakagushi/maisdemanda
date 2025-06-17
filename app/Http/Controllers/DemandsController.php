@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Service;
 use App\Models\ServiceCategory;
+use Illuminate\Support\Facades\DB;
 
 class DemandsController extends Controller
 {
@@ -56,24 +57,41 @@ class DemandsController extends Controller
     }
 
     // Listar solicitações
-    public function index()
+    public function index(Request $request)
     {
-        $demands = ServiceRequest::with('service', 'client')
-                    ->whereIn('status', ['open', 'in_negotiation', 'rejected'])
-                    ->get();
+        $status = $request->input('status');
+        $professionalId = Auth::id();
 
-        return view('profissionais.list', compact('demands'));
+        $query = ServiceRequest::with('service', 'client');
+
+        // Filtro por status
+        if ($status) {
+            $query->where('status', $status);
+        } else {
+            $query->whereIn('status', ['open', 'in_negotiation', 'rejected']);
+        }
+
+        // Mostrar os que ainda não foram aceitos OU já aceitos por esse profissional
+        $query->where(function ($q) use ($professionalId) {
+            $q->whereNull('professional_id')
+                ->orWhere('professional_id', $professionalId);
+        });
+
+        $demands = $query->get();
+
+        return view('profissionais.list', compact('demands', 'status'));
     }
-
-
     public function accept($id)
     {
         $serviceRequest = ServiceRequest::findOrFail($id);
 
-        // Verifica se o status atual permite aceitar
         if (in_array($serviceRequest->status, ['open', 'in_negotiation', 'rejected'])) {
-            $serviceRequest->status = 'accepted'; 
+            $serviceRequest->status = 'accepted';
+            $serviceRequest->professional_id = auth()->id();
             $serviceRequest->save();
+
+            // Chama a procedure
+            DB::statement("CALL create_service_order_after_accept(?,?)", [$serviceRequest->id, $serviceRequest->expected_budget]);
 
             return redirect()->back()->with('success', 'Solicitação aceita com sucesso!');
         }
@@ -82,7 +100,7 @@ class DemandsController extends Controller
     }
 
 
-        public function destroy($id)
+    public function destroy($id)
     {
         $serviceRequest = ServiceRequest::findOrFail($id);
 
@@ -92,7 +110,7 @@ class DemandsController extends Controller
             ->with('success', 'Solicitação de serviço deletada com sucesso.');
     }
 
-        // Mostrar formulário de edição
+    // Mostrar formulário de edição
     public function edit($id)
     {
         $serviceRequest = ServiceRequest::findOrFail($id);
