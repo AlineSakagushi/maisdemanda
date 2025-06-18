@@ -27,7 +27,7 @@
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
 
-                <!-- 🔔 Botão com contador de notificações -->
+                <!--  Botão com contador de notificações -->
                 <div class="relative mr-4" x-data="{ openNotif: false }">
                     <button @click="openNotif = ! openNotif" class="relative focus:outline-none">
                         🔔
