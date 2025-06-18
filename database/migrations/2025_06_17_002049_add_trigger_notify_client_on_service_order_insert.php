@@ -8,8 +8,6 @@ return new class extends Migration
     public function up(): void
     {
         DB::unprepared('
-            DELIMITER $$
-
             CREATE TRIGGER after_service_order_insert
             AFTER INSERT ON service_orders
             FOR EACH ROW
@@ -55,9 +53,7 @@ return new class extends Migration
                     NOW(),
                     NOW()
                 );
-            END$$
-
-            DELIMITER ;
+            END;
         ');
     }
 
