@@ -76,7 +76,11 @@
                 <!-- Grid de Demandas -->
                 <div class="grid gap-6 lg:gap-8">
                     @foreach($demands as $demand)
-                    <div x-data="{ open: false }" class="group">
+                    <div x-data="{ 
+                    open: false,
+                    showConfirmModal: false
+                    }" class="group">
+
                         <!-- Card Principal -->
                         <div class="demand-card bg-white/80 backdrop-blur-lg border border-gray-200 rounded-2xl p-6 hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-2"
                             @click="open = true">
@@ -175,11 +179,9 @@
 
                                 <!-- Botões de Ação -->
                                 <div class="flex lg:flex-col gap-3 lg:min-w-[140px]" @click.stop>
-                                    <a href="{{ route('solicitacoes.edit', $demand->id) }}"
-                                        class="flex-1 lg:flex-none bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl text-sm font-medium text-center transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                                        📋 Detalhes
-                                    </a>
 
+                                    @if ($demand->status !== 'accepted' && $demand->status !== 'completed')
+                                    <!-- Botão de Aceitar -->
                                     <form action="{{ route('demands.accept', $demand->id) }}" method="POST" class="flex-1 lg:flex-none"
                                         onsubmit="return confirm('Tem certeza que deseja aceitar esta solicitação?');">
                                         @csrf
@@ -189,6 +191,16 @@
                                             ✨ Aceitar
                                         </button>
                                     </form>
+                                    @elseif ($demand->status === 'accepted')
+                                    <!-- Botão que abre o modal -->
+                                    <button @click="showConfirmModal = true"
+                                        class="w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                                        ✅ Concluir Serviço
+                                    </button>
+
+                                    @endif
+
+
                                 </div>
                             </div>
                         </div>
@@ -264,12 +276,54 @@
                                             class="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-xl font-medium transition-colors">
                                             Fechar
                                         </button>
-
-                                        <a href="{{ route('solicitacoes.edit', $demand->id) }}"
-                                            class="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-medium text-center transition-all duration-300">
-                                            Ver Detalhes Completos
-                                        </a>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal de confirmação -->
+                        <div x-show="showConfirmModal"
+                            x-transition:enter="transition ease-out duration-300"
+                            x-transition:enter-start="opacity-0 scale-90"
+                            x-transition:enter-end="opacity-100 scale-100"
+                            x-transition:leave="transition ease-in duration-200"
+                            x-transition:leave-start="opacity-100 scale-100"
+                            x-transition:leave-end="opacity-0 scale-90"
+                            class="fixed inset-0 flex items-center justify-center bg-black/60 z-50"
+                            style="display: none;">
+
+                            <div @click.away="showConfirmModal = false"
+                                class="bg-white rounded-xl p-6 shadow-lg w-full max-w-lg space-y-4 text-gray-800">
+
+                                <h2 class="text-xl font-semibold text-center text-blue-600">Confirmar Conclusão do Serviço</h2>
+
+                                <div class="space-y-2 text-sm">
+                                    <p><strong>Título:</strong> {{ $demand->title }}</p>
+                                    <p><strong>Descrição:</strong> {{ $demand->description }}</p>
+                                    <p><strong>Data Desejada:</strong> {{ optional($demand->desired_date)->format('d/m/Y H:i') }}</p>
+                                    <p><strong>Endereço:</strong> {{ $demand->service_address }}</p>
+                                    <p><strong>Cliente:</strong> {{ $demand->client->name ?? 'N/A' }}</p>
+                                </div>
+
+                                <div class="text-2xl font-bold text-green-600 text-center border-t pt-4">
+                                    💰 Valor do Serviço: R$ {{ number_format($demand->expected_budget, 2, ',', '.') }}
+                                </div>
+                                <div class="text-m font-bold text-gray-400 text-center border-t pt-4">
+                                    💵 Confirme se o serviço foi pago com sucesso!
+                                </div>
+                                <div class="flex justify-end gap-3 pt-4">
+                                    <button @click="showConfirmModal = false"
+                                        class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md">
+                                        Cancelar
+                                    </button>
+
+                                    <form action="{{ route('demands.complete', $demand->id) }}" method="POST">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit"
+                                            class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-md shadow">
+                                            💷 Confirmar Pagamento
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>

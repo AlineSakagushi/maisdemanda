@@ -68,7 +68,7 @@ class DemandsController extends Controller
         if ($status) {
             $query->where('status', $status);
         } else {
-            $query->whereIn('status', ['open', 'in_negotiation', 'rejected']);
+            $query->whereIn('status', ['open', 'in_negotiation', 'rejected', 'completed']);
         }
 
         // Mostrar os que ainda não foram aceitos OU já aceitos por esse profissional
@@ -152,5 +152,41 @@ class DemandsController extends Controller
 
         return redirect()->route('dashboard')
             ->with('success', 'Solicitação atualizada com sucesso!');
+    }
+
+    public function complete($id)
+    {
+        $request = ServiceRequest::with(['client', 'service', 'serviceOrder'])->findOrFail($id);
+
+        if ($request->status === 'accepted') {
+    
+            $request->status = 'completed';
+            $request->save();
+
+            
+            $clientId = $request->client_id;
+            $professionalId = $request->professional_id ?? $request->service->professional_id ?? null;
+            $total = $request->expected_budget;
+            $serviceAmount = $total * 0.90; 
+            $platformFee = $total * 0.10;   
+            $method = "pix"; 
+            $paymentDate = now();
+
+            
+            DB::statement("CALL create_service_payment(?, ?, ?, ?, ?, ?, ?, ?)", [
+                $request->serviceOrder->id,          
+                $clientId,             
+                $professionalId,       
+                $serviceAmount,        
+                $method,               
+                $platformFee,          
+                null,                  
+                json_encode([]),       
+            ]);
+
+            return redirect()->back()->with('success', 'Serviço concluído e pagamento registrado com sucesso!');
+        }
+
+        return redirect()->back()->with('error', 'Essa solicitação não pode ser concluída.');
     }
 }

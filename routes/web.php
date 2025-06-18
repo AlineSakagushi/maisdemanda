@@ -67,3 +67,5 @@ Route::post('/notificacoes/{id}/marcar-como-lida', function ($id) {
     $notificacao->update(['read' => true, 'read_at' => now()]);
     return back();
 })->name('notificacoes.marcar-como-lida');
+
+Route::put('/demands/{id}/complete', [DemandsController::class, 'complete'])->name('demands.complete');
