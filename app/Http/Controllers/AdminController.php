@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DashboardGrowth;
 use App\Models\User;
 use App\Models\ServiceRequest;
 use App\Models\ServiceCategory;
@@ -9,6 +10,7 @@ use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\DashboardSummary;
 
 class AdminController extends Controller
 {
@@ -18,14 +20,23 @@ class AdminController extends Controller
     public function dashboard()
     {
         // Estatísticas gerais
-        $totalUsers = User::count();
-        $totalClients = User::where('user_type', 'Client')->count();
-        $totalProfessionals = User::where('user_type', 'Professional')->count();
-        $totalServiceRequests = ServiceRequest::count();
+
+        $summary = DashboardSummary::first();
+
+        $totalUsers = $summary->total_users;
+        $totalClients = $summary->total_clients;
+        $totalProfessionals = $summary->total_professionals;
+        $totalServiceRequests = $summary->total_service_requests;
         
         // Dados financeiros
-        $totalGuardedMoney = User::sum('available_balance');
-        $monthlyEarnings = $this->getMonthlyEarnings();
+        $growth = DashboardGrowth::first();
+
+        $totalGuardedMoney = $growth->total_available_balance;
+        $monthlyEarnings = [
+            'current_month' => $growth->current_month,
+            'last_month' => $growth->last_month,
+            'growth_percentage' => $growth->growth_percentage
+        ];
         
         // Dados para gráficos
         $servicesPerMonth = $this->getServicesPerMonth();
