@@ -21,16 +21,8 @@
             <div class="p-6">
                 <a href="{{ route('home') }}" class="flex items-center group hover:bg-gray-50 rounded-lg p-2 -m-2 transition-colors duration-200">
                     <div class="flex-shrink-0">
-                        <img class="h-8 w-8 group-hover:scale-105 transition-transform duration-200" src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg" alt="Logo">
+                        <h1 class="text-3xl font-bold text-blue-600">Demanda+</h1>
                     </div>
-                    <div class="ml-3">
-                        <p class="text-sm font-medium text-gray-700 group-hover:text-indigo-600">Painel do Administrador</p>
-                        <p class="text-xs text-gray-500">{{ Auth::user()->name }}</p>
-                    </div>
-                </a>
-                <div class="mt-2">
-                    <p class="text-xs text-gray-400 px-2">Clique no logo para voltar ao início</p>
-                </div>
             </div>
 
             <!-- Navigation -->
