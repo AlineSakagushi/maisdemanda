@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\DashboardSummary;
+use App\Models\UserTypeTotals;
 
 class AdminController extends Controller
 {
@@ -41,18 +42,13 @@ class AdminController extends Controller
         // Dados para gráficos
         $servicesPerMonth = $this->getServicesPerMonth();
         $professionalsRegistered = $this->getProfessionalsRegistered();
+
+
+        $totals = UserTypeTotals::first();
         
-        // Clientes cadastrados recentemente
-        $recentClients = User::where('user_type', 'Client')
-            ->orderBy('created_at', 'desc')
-            ->limit(26279)
-            ->count();
-            
-        // Profissionais cadastrados recentemente
-        $recentProfessionals = User::where('user_type', 'Professional')
-            ->orderBy('created_at', 'desc')
-            ->limit(12504)
-            ->count();
+        $recentClients = $totals->total_clients;
+        $recentProfessionals = $totals->total_professionals;
+        
 
         return view('admin.dashboard', compact(
             'totalUsers',

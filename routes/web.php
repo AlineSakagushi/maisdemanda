@@ -7,6 +7,8 @@ use App\Http\Controllers\ServiceRequestController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Middleware\CheckUserType;
 use App\Http\Controllers\AdminController;
+use App\Models\Service;
+use App\Models\ServiceRequest;
 
 Route::get('/dashboard',[ServiceRequestController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -14,6 +16,7 @@ Route::middleware(['auth', 'checkusertype:Client'])->group(function () {
     Route::get('/solicitacoes/criar', [ServiceRequestController::class, 'create'])->name('solicitacoes.create');
     Route::post('/solicitacoes', [ServiceRequestController::class, 'store'])->name('solicitacoes.store');
     Route::resource('solicitacoes', ServiceRequestController::class);
+    Route::post('/solicitacoes/avaliar/{id}', [ServiceRequestController::class, 'rate'])->name('solicitacoes.rate');
 });
 
 
@@ -69,3 +72,4 @@ Route::post('/notificacoes/{id}/marcar-como-lida', function ($id) {
 })->name('notificacoes.marcar-como-lida');
 
 Route::put('/demands/{id}/complete', [DemandsController::class, 'complete'])->name('demands.complete');
+

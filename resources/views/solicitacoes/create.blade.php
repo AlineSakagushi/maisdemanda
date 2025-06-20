@@ -103,7 +103,7 @@
                     >
                         <option disabled selected>Selecione...</option>
                         <option value="High">Alta</option>
-                        <option value="Medium">Média</option>
+                        <option value="Medium" selected>Média</option>
                         <option value="Low">Baixa</option>
                     </select>
                 </div>

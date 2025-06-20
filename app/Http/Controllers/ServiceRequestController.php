@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Evaluation;
 use App\Models\ServiceRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 
+
 class ServiceRequestController extends Controller
 {
-    // Mostrar formulário de criação
     public function create()
     {
         $services = Service::all();
@@ -18,7 +19,6 @@ class ServiceRequestController extends Controller
         return view('solicitacoes.create', compact('services', 'categories'));
     }
 
-    // Salvar nova solicitação
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -31,14 +31,12 @@ class ServiceRequestController extends Controller
             'urgency' => 'nullable|string|max:50',
         ]);
 
-        // Criar um serviço básico vinculado à solicitação
         $service = Service::create([
             'service_category_id' => $validated['service_category_id'],
             'price' => $validated['expected_budget'],
             'status' => 'active',
         ]);
 
-        // Criar a solicitação de serviço
         ServiceRequest::create([
             'client_id' => Auth::id(),
             'service_id' => $service->id,
@@ -51,32 +49,30 @@ class ServiceRequestController extends Controller
             'request_date' => now(),
         ]);
 
-        return redirect()->route('dashboard')
-            ->with('success', 'Solicitação criada com sucesso!');
+        return redirect()->route('dashboard')->with('success', 'Solicitação criada com sucesso!');
     }
 
-    // Listar solicitações
     public function index()
     {
-        $services = ServiceRequest::with('service', 'client')
-                    ->where('client_id', auth()->id())
-                    ->get();
+        $services = ServiceRequest::with([
+            'service', 
+            'client',
+            'serviceOrder.professional' // Add this relationship chain
+        ])
+        ->where('client_id', auth()->id())
+        ->get();
 
         return view('dashboard', compact('services'));
     }
 
-
-        public function destroy($id)
+    public function destroy($id)
     {
         $serviceRequest = ServiceRequest::findOrFail($id);
-
         $serviceRequest->delete();
 
-        return redirect()->route('dashboard')
-            ->with('success', 'Solicitação de serviço deletada com sucesso.');
+        return redirect()->route('dashboard')->with('success', 'Solicitação de serviço deletada com sucesso.');
     }
 
-        // Mostrar formulário de edição
     public function edit($id)
     {
         $serviceRequest = ServiceRequest::findOrFail($id);
@@ -85,7 +81,6 @@ class ServiceRequestController extends Controller
         return view('solicitacoes.edit', compact('serviceRequest', 'categories'));
     }
 
-    // Atualizar uma solicitação
     public function update(Request $request, $id)
     {
         $serviceRequest = ServiceRequest::findOrFail($id);
@@ -100,13 +95,11 @@ class ServiceRequestController extends Controller
             'urgency' => 'nullable|string|max:50',
         ]);
 
-        // Atualizar o serviço vinculado, se necessário
         $serviceRequest->service->update([
             'service_category_id' => $validated['service_category_id'],
             'price' => $validated['expected_budget'],
         ]);
 
-        // Atualizar a solicitação
         $serviceRequest->update([
             'title' => $validated['title'],
             'description' => $validated['description'],
@@ -116,7 +109,55 @@ class ServiceRequestController extends Controller
             'status' => $validated['status'],
         ]);
 
-        return redirect()->route('dashboard')
-            ->with('success', 'Solicitação atualizada com sucesso!');
+        return redirect()->route('dashboard')->with('success', 'Solicitação atualizada com sucesso!');
+    }
+
+    public function rate(Request $request, $id)
+    {
+
+        $validated = $request->validate([
+            'rating' => 'required|numeric|min:1|max:5',
+            'comment' => 'nullable|string|max:1000'
+        ]);
+
+        try {
+            $serviceRequest = ServiceRequest::with('serviceOrder')->findOrFail($id);
+
+            if (!$serviceRequest->serviceOrder) {
+                return back()->with('error', 'Ordem de serviço não encontrada.');
+            }
+
+            // Get related IDs
+            $serviceOrder = $serviceRequest->serviceOrder;
+
+            // Create or update evaluation with all required fields
+            $evaluation = Evaluation::updateOrCreate(
+                ['service_order_id' => $serviceOrder->id],
+                [
+                    'service_order_id' => $serviceOrder->id,
+                    'client_id' => $serviceRequest->client_id,
+                    'professional_id' => $serviceOrder->professional_id,
+                    'service_id' => $serviceRequest->service_id,
+                    'rating' => $validated['rating'],
+                    'comment' => $validated['comment'],
+                    'evaluation_date' => now()
+                ]
+            );
+
+                    // 🔁 Chama a procedure para atualizar a média do profissional
+        DB::statement('CALL UpdateProfessionalRatingAverage(?)', [
+            $serviceOrder->professional_id,
+        ]);
+
+
+            return redirect()->route('dashboard')
+                ->with('success', 'Avaliação atualizada com sucesso!');
+        } catch (\Exception $e) {
+            logger()->error('Evaluation Error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->with('error', 'Ocorreu um erro ao atualizar a avaliação: ' . $e->getMessage());
+        }
     }
 }

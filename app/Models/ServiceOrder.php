@@ -41,4 +41,12 @@ class ServiceOrder extends Model
     {
         return $this->belongsTo(User::class, 'professional_id');
     }
+
+    /**
+     * Relação com a avaliação (uma ordem de serviço pode ter uma avaliação)
+     */
+    public function evaluation()
+    {
+        return $this->hasOne(Evaluation::class, 'service_order_id');
+    }
 }
