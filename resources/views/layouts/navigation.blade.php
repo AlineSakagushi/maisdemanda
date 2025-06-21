@@ -30,7 +30,7 @@
                         🔔
                         @if(isset($notificacoesNaoLidas) && $notificacoesNaoLidas->count())
                         
-                        <span clas s="absolute top-0 right-0 bg-red-600 text-white text-xs px-1 rounded-full">
+                        <span class="absolute top-0 right-0 bg-red-600 text-white text-xs px-1 rounded-full">
                             {{ $notificacoesNaoLidas->count() }}
                         </span>
                         @endif

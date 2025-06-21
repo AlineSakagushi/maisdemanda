@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
             if (auth()->check()) {
                 $notificacoes = Notification::where('user_id', auth()->id())
                     ->latest()
-                    ->take(10)
+                    ->take(100)
                     ->get();
 
                 $notificacoesNaoLidas = $notificacoes->where('read', false);

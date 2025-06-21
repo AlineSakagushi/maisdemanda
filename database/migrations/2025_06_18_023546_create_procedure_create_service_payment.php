@@ -13,7 +13,7 @@ return new class extends Migration
                 IN p_client_id BIGINT,
                 IN p_professional_id BIGINT,
                 IN p_service_amount DECIMAL(10,2),
-                IN p_payment_method VARCHAR(50), -- trocar ENUM por VARCHAR aqui
+                IN p_payment_method VARCHAR(50), 
                 IN p_platform_fee DECIMAL(10,2),
                 IN p_transaction_code VARCHAR(255),
                 IN p_payment_data JSON

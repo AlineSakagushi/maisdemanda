@@ -6,6 +6,7 @@
 - Node.js 20 ou superior;
 - Docker;
 - Docker Compose;
+- mbstring;
 
 # Como rodar o projeto baixado
 
@@ -25,6 +26,12 @@ Instalar as dependências do Node.js.
 npm install
 ```
 
+Instalar a extensão mbstring ou habilitar
+
+```sh
+sudo apt install php-mbstring
+sudo service apache2 restart 
+```
 Gerar a chave.
 
 ```sh
