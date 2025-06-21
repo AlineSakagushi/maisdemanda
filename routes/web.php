@@ -10,13 +10,14 @@ use App\Http\Controllers\AdminController;
 use App\Models\Service;
 use App\Models\ServiceRequest;
 
-Route::get('/dashboard',[ServiceRequestController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware(['auth', 'checkusertype:Client'])->group(function () {
     Route::get('/solicitacoes/criar', [ServiceRequestController::class, 'create'])->name('solicitacoes.create');
     Route::post('/solicitacoes', [ServiceRequestController::class, 'store'])->name('solicitacoes.store');
     Route::resource('solicitacoes', ServiceRequestController::class);
     Route::post('/solicitacoes/avaliar/{id}', [ServiceRequestController::class, 'rate'])->name('solicitacoes.rate');
+    Route::get('/dashboard',[ServiceRequestController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 });
 
 
@@ -37,7 +38,7 @@ Route::get('/register/professional', [RegisteredUserController::class, 'createPr
     ->middleware('guest')
     ->name('register.professional');
 
-Route::post('/register/professional', [RegisteredUserController::class, 'store'])
+Route::post('/register/professional', [RegisteredUserController::class, 'storeProfessional'])
     ->middleware('guest')
     ->name('register.professional.store');
 

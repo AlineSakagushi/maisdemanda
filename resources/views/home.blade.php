@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,55 +12,156 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
+
         .fade-in {
             animation: fadeIn 0.6s ease-out;
         }
+
         .hover-scale {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+
         .hover-scale:hover {
             transform: translateY(-4px);
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
         }
+
         .service-card {
             transition: all 0.3s ease;
             border-left: 4px solid transparent;
         }
+
         .service-card:hover {
             border-left-color: #2563eb;
             background: #f8fafc;
         }
     </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
+
 <body class="bg-blue-100 min-h-screen flex flex-col">
 
-<header class="bg-white shadow-lg">
-    <div class="container mx-auto px-6 py-4">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <h1 class="text-3xl font-bold text-blue-600">Demanda+</h1>
-            </div>
-            <nav class="hidden md:flex items-center space-x-4">
+    <header class="bg-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <h1 class="text-3xl font-bold text-blue-600">Demanda+</h1>
+                </div>
+                <nav class="hidden md:flex items-center space-x-4">
 
-                @guest
+                    @guest
                     <a href="{{ route('register') }}" class="text-gray-600 hover:text-blue-600 transition-colors font-medium">Desejo contratar</a>
                     <a href="{{ route('register.professional') }}" class="text-gray-600 hover:text-blue-600 transition-colors font-medium">Desejo trabalhar</a>
                     <a href="{{ route('login') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">Login</a>
-                @endguest
+                    @endguest
 
-                @auth
-                    <a href="{{ route('dashboard') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">Solicitações</a>
-                @endauth
+                    @auth
+                    @if(!auth()->user()->isAdmin())
+                    <a href="{{ auth()->user()->isClient() ? route('dashboard') : route('demands.list') }}"
+                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                        Solicitações
+                    </a>
+                    @else
+                    <a href="{{ route('admin.dashboard') }}"
+                        class="bg-teal-600 text-white shadow-xl px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                        Dashboard
+                    </a>
+                    @endif
 
-            </nav>
+                    @endauth
+
+                    <!-- Settings Dropdown -->
+                    <div class="hidden sm:flex sm:items-center sm:ms-6">
+
+                        @auth
+                        <!-- 🔻 Menu com nome do usuário -->
+                        <x-dropdown align="right" width="48">
+                            <x-slot name="trigger">
+                                <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                                    <div>{{ Auth::user()->name }}</div>
+                                    <div class="ms-1">
+                                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                </button>
+                            </x-slot>
+
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('profile.edit')">
+                                    {{ __('Profile') }}
+                                </x-dropdown-link>
+
+                                <!-- Authentication -->
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <x-dropdown-link :href="route('logout')"
+                                        onclick="event.preventDefault();
+                        this.closest('form').submit();">
+                                        {{ __('Log Out') }}
+                                    </x-dropdown-link>
+                                </form>
+                            </x-slot>
+                        </x-dropdown>
+                        @endauth
+                    </div>
+
+                    <!-- Hamburger -->
+                    <div class="-me-2 flex items-center sm:hidden">
+                        <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+                            <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                                <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                                <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+            </div>
         </div>
-    </div>
-</header>
+
+        <!-- Responsive Navigation Menu -->
+         @auth
+        <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
+            <div class="pt-2 pb-3 space-y-1">
+                <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')">
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+            </div>
+
+            <!-- Responsive Settings Options -->
+            <div class="pt-4 pb-1 border-t border-gray-200">
+                <div class="px-4">
+                    <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
+                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+                </div>
+
+                <div class="mt-3 space-y-1">
+                    <x-responsive-nav-link :href="route('profile.edit')">
+                        {{ __('Profile') }}
+                    </x-responsive-nav-link>
+
+                    <!-- Authentication -->
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+
+                        <x-responsive-nav-link :href="route('logout')"
+                            onclick="event.preventDefault();
+                                        this.closest('form').submit();">
+                            {{ __('Log Out') }}
+                        </x-responsive-nav-link>
+                    </form>
+                </div>
+            </div>
+        </div>
+        @endauth
+
+    </header>
 
 
     <!-- Banner Hero -->
@@ -93,9 +195,9 @@
                     <!-- Serviço 1 -->
                     <div class="service-card border rounded-xl p-6 flex gap-6 hover-scale cursor-pointer">
                         <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=150&h=150&fit=crop&crop=center" 
-                                 alt="Técnico de Ar-Condicionado" 
-                                 class="w-32 h-32 object-cover rounded-lg shadow-md" />
+                            <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=150&h=150&fit=crop&crop=center"
+                                alt="Técnico de Ar-Condicionado"
+                                class="w-32 h-32 object-cover rounded-lg shadow-md" />
                             <div class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-full">Disponível</div>
                         </div>
                         <div class="flex-1">
@@ -123,7 +225,7 @@
                     <!-- Serviço 2 -->
                     <div class="service-card border rounded-xl p-6 flex gap-6 hover-scale cursor-pointer">
                         <div class="relative">
-                           <img src="./image/encanador.jpg" alt="Encanador Profissional" class="w-32 h-32 object-cover rounded-lg shadow-md" />
+                            <img src="./image/encanador.jpg" alt="Encanador Profissional" class="w-32 h-32 object-cover rounded-lg shadow-md" />
                             <div class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-full">Disponível</div>
                         </div>
                         <div class="flex-1">
@@ -151,9 +253,9 @@
                     <!-- Serviço 3 -->
                     <div class="service-card border rounded-xl p-6 flex gap-6 hover-scale cursor-pointer">
                         <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=150&h=150&fit=crop&crop=center" 
-                                 alt="Diarista Profissional" 
-                                 class="w-32 h-32 object-cover rounded-lg shadow-md" />
+                            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=150&h=150&fit=crop&crop=center"
+                                alt="Diarista Profissional"
+                                class="w-32 h-32 object-cover rounded-lg shadow-md" />
                             <div class="absolute -top-2 -right-2 bg-yellow-400 text-white text-xs px-2 py-1 rounded-full">Muito Procurado</div>
                         </div>
                         <div class="flex-1">
@@ -189,12 +291,12 @@
                     <span class="text-2xl mr-3">👨‍🔧</span>
                     <h2 class="text-xl font-bold text-gray-800">Profissionais Top</h2>
                 </div>
-                
+
                 <div class="space-y-4">
                     <div class="flex items-center p-3 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors cursor-pointer">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop&crop=face" 
-                             alt="Carlos Silva" 
-                             class="w-12 h-12 rounded-full object-cover mr-4" />
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop&crop=face"
+                            alt="Carlos Silva"
+                            class="w-12 h-12 rounded-full object-cover mr-4" />
                         <div class="flex-1">
                             <div class="flex items-center justify-between">
                                 <p class="font-bold text-gray-800">Carlos Silva</p>
@@ -209,9 +311,9 @@
                     </div>
 
                     <div class="flex items-center p-3 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors cursor-pointer">
-                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=60&h=60&fit=crop&crop=face" 
-                             alt="Ana Costa" 
-                             class="w-12 h-12 rounded-full object-cover mr-4" />
+                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=60&h=60&fit=crop&crop=face"
+                            alt="Ana Costa"
+                            class="w-12 h-12 rounded-full object-cover mr-4" />
                         <div class="flex-1">
                             <div class="flex items-center justify-between">
                                 <p class="font-bold text-gray-800">Ana Costa</p>
@@ -226,9 +328,9 @@
                     </div>
 
                     <div class="flex items-center p-3 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors cursor-pointer">
-                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face" 
-                             alt="Roberto Santos" 
-                             class="w-12 h-12 rounded-full object-cover mr-4" />
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face"
+                            alt="Roberto Santos"
+                            class="w-12 h-12 rounded-full object-cover mr-4" />
                         <div class="flex-1">
                             <div class="flex items-center justify-between">
                                 <p class="font-bold text-gray-800">Roberto Santos</p>
@@ -258,7 +360,8 @@
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Tempo Médio Resposta</span>
-                        <span class="font-bold text-xl text-gray-800">< 30min</span>
+                        <span class="font-bold text-xl text-gray-800">
+                            < 30min</span>
                     </div>
                 </div>
             </div>
@@ -266,7 +369,7 @@
     </main>
 
     <!-- Footer-->
-<x-footer />
+    <x-footer />
 
     <script>
         // Adicionar interatividade
@@ -287,12 +390,12 @@
                         const originalText = this.textContent;
                         this.textContent = 'Conectando...';
                         this.disabled = true;
-                        
+
                         setTimeout(() => {
                             this.textContent = '✓ Solicitado!';
                             this.classList.remove('bg-blue-600', 'hover:bg-blue-700');
                             this.classList.add('bg-blue-600');
-                            
+
                             setTimeout(() => {
                                 this.textContent = originalText;
                                 this.disabled = false;
@@ -307,4 +410,5 @@
     </script>
 
 </body>
+
 </html>

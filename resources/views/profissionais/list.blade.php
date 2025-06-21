@@ -23,7 +23,6 @@
         <div class="relative z-10">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Header Section -->
-                <!-- Header Section -->
                 <div class="bg-gray-100 backdrop-blur-lg shadow-xl rounded-2xl p-6 mb-8 border border-white/20">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div>
@@ -33,22 +32,9 @@
 
                         <!-- Filtros -->
                         <form method="GET" action="{{ route('demands.list') }}" class="flex flex-wrap gap-2">
-                            {{-- Filtro por Categoria (opcional - não funcional aqui) --}}
-                            <select class="px-4 py-2 rounded-lg border border-gray-200 bg-white/90 backdrop-blur text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option>Todas Categorias</option>
-                            </select>
-
-                            {{-- Filtro por Urgência (exemplo - não funcional aqui) --}}
-                            <select class="px-4 py-2 rounded-lg border border-gray-200 bg-white/90 backdrop-blur text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option>Urgência</option>
-                                <option>Alta</option>
-                                <option>Média</option>
-                                <option>Baixa</option>
-                            </select>
-
                             {{-- Filtro por Status --}}
                             <select name="status" onchange="this.form.submit()" class="px-4 py-2 rounded-lg border border-gray-200 bg-white/90 backdrop-blur text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option value="">Todos os Status</option>
+                                <option value="">Todos os Status </option>
                                 <option value="open" {{ request('status') == 'open' ? 'selected' : '' }}>Aberto</option>
                                 <option value="in_negotiation" {{ request('status') == 'in_negotiation' ? 'selected' : '' }}>Em Negociação</option>
                                 <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejeitado</option>

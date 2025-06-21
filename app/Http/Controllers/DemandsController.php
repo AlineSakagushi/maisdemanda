@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class DemandsController extends Controller
 {
-    // Mostrar formulário de criação
+
     public function create()
     {
         $services = Service::all();
@@ -19,7 +19,6 @@ class DemandsController extends Controller
         return view('solicitacoes.create', compact('services', 'categories'));
     }
 
-    // Salvar nova solicitação
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -32,14 +31,12 @@ class DemandsController extends Controller
             'urgency' => 'nullable|string|max:50',
         ]);
 
-        // Criar um serviço básico vinculado à solicitação
         $service = Service::create([
             'service_category_id' => $validated['service_category_id'],
             'price' => $validated['expected_budget'],
             'status' => 'active',
         ]);
 
-        // Criar a solicitação de serviço
         ServiceRequest::create([
             'client_id' => Auth::id(),
             'service_id' => $service->id,
@@ -56,31 +53,38 @@ class DemandsController extends Controller
             ->with('success', 'Solicitação criada com sucesso!');
     }
 
-    // Listar solicitações
     public function index(Request $request)
     {
-        $status = $request->input('status');
+        $statusFilter = $request->input('status');
         $professionalId = Auth::id();
 
-        $query = ServiceRequest::with('service', 'client');
+        $query = ServiceRequest::with('service', 'client')
+            ->where(function ($q) use ($professionalId, $statusFilter) {
+                $q->where(function ($subQuery) use ($professionalId) {
+                    $subQuery->where('status', 'completed')
+                        ->where('professional_id', $professionalId);
+                });
 
-        // Filtro por status
-        if ($status) {
-            $query->where('status', $status);
-        } else {
-            $query->whereIn('status', ['open', 'in_negotiation', 'rejected', 'completed']);
+                if (!$statusFilter || $statusFilter !== 'completed') {
+                    $q->orWhere(function ($subQuery) use ($professionalId) {
+                        $subQuery->where('status', '<>', 'completed')
+                            ->where(function ($q2) use ($professionalId) {
+                                $q2->whereNull('professional_id')
+                                    ->orWhere('professional_id', $professionalId);
+                            });
+                    });
+                }
+            });
+
+        if ($statusFilter && $statusFilter !== 'completed') {
+            $query->where('status', $statusFilter);
         }
-
-        // Mostrar os que ainda não foram aceitos OU já aceitos por esse profissional
-        $query->where(function ($q) use ($professionalId) {
-            $q->whereNull('professional_id')
-                ->orWhere('professional_id', $professionalId);
-        });
 
         $demands = $query->get();
 
-        return view('profissionais.list', compact('demands', 'status'));
+        return view('profissionais.list', compact('demands', 'statusFilter'));
     }
+
     public function accept($id)
     {
         $serviceRequest = ServiceRequest::findOrFail($id);
@@ -159,29 +163,29 @@ class DemandsController extends Controller
         $request = ServiceRequest::with(['client', 'service', 'serviceOrder'])->findOrFail($id);
 
         if ($request->status === 'accepted') {
-    
+
             $request->status = 'completed';
             $request->save();
 
-            
+
             $clientId = $request->client_id;
             $professionalId = $request->professional_id ?? $request->service->professional_id ?? null;
             $total = $request->expected_budget;
-            $serviceAmount = $total * 0.90; 
-            $platformFee = $total * 0.10;   
-            $method = "pix"; 
+            $serviceAmount = $total * 0.90;
+            $platformFee = $total * 0.10;
+            $method = "pix";
             $paymentDate = now();
 
-            
+
             DB::statement("CALL create_service_payment(?, ?, ?, ?, ?, ?, ?, ?)", [
-                $request->serviceOrder->id,          
-                $clientId,             
-                $professionalId,       
-                $serviceAmount,        
-                $method,               
-                $platformFee,          
-                null,                  
-                json_encode([]),       
+                $request->serviceOrder->id,
+                $clientId,
+                $professionalId,
+                $serviceAmount,
+                $method,
+                $platformFee,
+                null,
+                json_encode([]),
             ]);
 
             return redirect()->back()->with('success', 'Serviço concluído e pagamento registrado com sucesso!');

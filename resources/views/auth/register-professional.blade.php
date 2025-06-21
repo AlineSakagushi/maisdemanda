@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ route('register.professional.store') }}">
         @csrf
 
         <!-- Hidden user_type to register as Professional -->

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Service;
 use App\Models\ServiceCategory;
-
+use Illuminate\Support\Facades\DB;
 
 class ServiceRequestController extends Controller
 {
@@ -52,17 +52,23 @@ class ServiceRequestController extends Controller
         return redirect()->route('dashboard')->with('success', 'Solicitação criada com sucesso!');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $services = ServiceRequest::with([
-            'service', 
-            'client',
-            'serviceOrder.professional' // Add this relationship chain
-        ])
-        ->where('client_id', auth()->id())
-        ->get();
+        $status = $request->input('status');
 
-        return view('dashboard', compact('services'));
+        $query = ServiceRequest::with([
+            'service',
+            'client',
+            'serviceOrder.professional'
+        ])->where('client_id', auth()->id());
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        $services = $query->get();
+
+        return view('dashboard', compact('services', 'status'));
     }
 
     public function destroy($id)
@@ -127,10 +133,10 @@ class ServiceRequestController extends Controller
                 return back()->with('error', 'Ordem de serviço não encontrada.');
             }
 
-            // Get related IDs
+
             $serviceOrder = $serviceRequest->serviceOrder;
 
-            // Create or update evaluation with all required fields
+
             $evaluation = Evaluation::updateOrCreate(
                 ['service_order_id' => $serviceOrder->id],
                 [
@@ -144,10 +150,10 @@ class ServiceRequestController extends Controller
                 ]
             );
 
-                    // 🔁 Chama a procedure para atualizar a média do profissional
-        DB::statement('CALL UpdateProfessionalRatingAverage(?)', [
-            $serviceOrder->professional_id,
-        ]);
+
+            DB::statement('CALL UpdateProfessionalRatingAverage(?)', [
+                $serviceOrder->professional_id,
+            ]);
 
 
             return redirect()->route('dashboard')

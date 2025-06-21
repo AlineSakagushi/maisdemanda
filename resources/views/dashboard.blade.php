@@ -1,9 +1,4 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="text-3xl font-bold text-blue-600">
-            {{ __('Minhas Solicitações') }}
-        </h2>
-    </x-slot>
 
     <style>
         [x-cloak] {
@@ -89,11 +84,36 @@
 
     <div class="py-10 bg-blue-100 min-h-screen">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="bg-gray-100 backdrop-blur-lg shadow-xl rounded-2xl p-6 mb-8 border border-white/20">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Minhas solicitações</h3>
+                        <p class="text-black">Filtre as suas solicitações</p>
+                    </div>
+
+                    <!-- Filtros -->
+                    <form method="GET" action="{{ route('dashboard') }}" class="flex flex-wrap gap-2">
+                    
+
+                        {{-- Filtro por Status --}}
+                        <select name="status" onchange="this.form.submit()" class="px-4 py-2 rounded-lg border border-gray-200 bg-white/90 backdrop-blur text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Todos os Status </option>
+                            <option value="open" {{ request('status') == 'open' ? 'selected' : '' }}>Aberto</option>
+                            <option value="in_negotiation" {{ request('status') == 'in_negotiation' ? 'selected' : '' }}>Em Negociação</option>
+                            <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejeitado</option>
+                            <option value="accepted" {{ request('status') == 'accepted' ? 'selected' : '' }}>Aceito</option>
+                            <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completo</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+
             <div class="bg-white shadow-lg rounded-xl p-8 fade-in">
                 <h3 class="text-2xl font-bold text-gray-800 mb-6">Solicitações de Serviço</h3>
 
                 <a href="{{ route('solicitacoes.create') }}"
-                    class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md shadow">
+                    class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md shadow mb-5">
                     + Nova Solicitação
                 </a>
 
@@ -102,6 +122,8 @@
                     Nenhuma solicitação de serviço encontrada.
                 </div>
                 @else
+
+
                 <div class="space-y-6">
                     @foreach($services as $service)
                     <div class="service-card border rounded-xl p-6 flex gap-6 hover-scale"
@@ -225,30 +247,30 @@
                                                 </div>
 
                                                 <!-- Professional Info -->
-                                                
+
                                                 <div class="bg-gray-100 p-4 rounded-lg space-y-3 text-sm text-gray-800">
                                                     <h4 class="text-l font-bold text-gray-700">Dados do profissional</h2>
-                                                    @if($service->serviceOrder?->professional)
-                                                    <p class="flex items-center">
-                                                        <strong class="w-32 flex-shrink-0">Nome:</strong>
-                                                        <span>{{ $service->serviceOrder->professional->name }}</span>
-                                                    </p>
-                                                    <p class="flex items-center">
-                                                        <strong class="w-32 flex-shrink-0">Email:</strong>
-                                                        <span>{{ $service->serviceOrder->professional->email }}</span>
-                                                    </p>
-                                                    @if($service->serviceOrder->professional->phone)
-                                                    <p class="flex items-center">
-                                                        <strong class="w-32 flex-shrink-0">Telefone:</strong>
-                                                        <span>{{ $service->serviceOrder->professional->phone }}</span>
-                                                    </p>
-                                                    @endif
-                                                    @else
-                                                    <p class="flex items-center">
-                                                        <strong class="w-32 flex-shrink-0">Profissional:</strong>
-                                                        <span>Nenhum profissional atribuído</span>
-                                                    </p>
-                                                    @endif
+                                                        @if($service->serviceOrder?->professional)
+                                                        <p class="flex items-center">
+                                                            <strong class="w-32 flex-shrink-0">Nome:</strong>
+                                                            <span>{{ $service->serviceOrder->professional->name }}</span>
+                                                        </p>
+                                                        <p class="flex items-center">
+                                                            <strong class="w-32 flex-shrink-0">Email:</strong>
+                                                            <span>{{ $service->serviceOrder->professional->email }}</span>
+                                                        </p>
+                                                        @if($service->serviceOrder->professional->phone)
+                                                        <p class="flex items-center">
+                                                            <strong class="w-32 flex-shrink-0">Telefone:</strong>
+                                                            <span>{{ $service->serviceOrder->professional->phone }}</span>
+                                                        </p>
+                                                        @endif
+                                                        @else
+                                                        <p class="flex items-center">
+                                                            <strong class="w-32 flex-shrink-0">Profissional:</strong>
+                                                            <span>Nenhum profissional atribuído</span>
+                                                        </p>
+                                                        @endif
                                                 </div>
 
                                                 <!-- Rating Form -->

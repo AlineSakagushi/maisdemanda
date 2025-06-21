@@ -1,5 +1,6 @@
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
     <!-- Primary Navigation Menu -->
+    
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
@@ -16,11 +17,7 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    @if(Auth::user()->type === 'professional')
-                    <a href="{{ route('solicitacoes.index') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 transition">
-                        Minhas Solicitações
-                    </a>
-                    @endif
+
                 </div>
             </div>
 
@@ -32,7 +29,8 @@
                     <button @click="openNotif = ! openNotif" class="relative focus:outline-none">
                         🔔
                         @if(isset($notificacoesNaoLidas) && $notificacoesNaoLidas->count())
-                        <span class="absolute top-0 right-0 bg-red-600 text-white text-xs px-1 rounded-full">
+                        
+                        <span clas s="absolute top-0 right-0 bg-red-600 text-white text-xs px-1 rounded-full">
                             {{ $notificacoesNaoLidas->count() }}
                         </span>
                         @endif
