@@ -1,0 +1,227 @@
+Procedures, Views e Trigger utilizadas
+
+            CREATE PROCEDURE UpdateProfessionalRatingAverage(IN p_user_id INT)
+            BEGIN
+                DECLARE avg_rating DECIMAL(2,1);
+
+                SELECT AVG(rating)
+                INTO avg_rating
+                FROM evaluations
+                WHERE professional_id = p_user_id;
+
+                UPDATE users
+                SET rating_average = avg_rating
+                WHERE id = p_user_id;
+            END
+
+
+
+
+
+ DROP PROCEDURE IF EXISTS create_service_payment;
+            CREATE PROCEDURE create_service_payment (
+                IN p_service_order_id BIGINT,
+                IN p_client_id BIGINT,
+                IN p_professional_id BIGINT,
+                IN p_service_amount DECIMAL(10,2),
+                IN p_payment_method VARCHAR(50), 
+                IN p_platform_fee DECIMAL(10,2),
+                IN p_transaction_code VARCHAR(255),
+                IN p_payment_data JSON
+            )
+            BEGIN
+                DECLARE v_total_amount DECIMAL(10,2);
+                SET v_total_amount = p_service_amount + p_platform_fee;
+
+                INSERT INTO service_payments (
+                    service_order_id,
+                    client_id,
+                    professional_id,
+                    total_amount,
+                    service_amount,
+                    platform_fee,
+                    payment_method,
+                    payment_status,
+                    payment_date,
+                    due_date,
+                    transaction_code,
+                    payment_data,
+                    created_at,
+                    updated_at
+                ) VALUES (
+                    p_service_order_id,
+                    p_client_id,
+                    p_professional_id,
+                    v_total_amount,
+                    p_service_amount,
+                    p_platform_fee,
+                    p_payment_method,
+                    'approved',
+                    NOW(),
+                    NULL,
+                    p_transaction_code,
+                    p_payment_data,
+                    NOW(),
+                    NOW()
+                );
+            END;
+
+
+            DROP PROCEDURE IF EXISTS create_service_order_after_accept;
+
+            CREATE PROCEDURE create_service_order_after_accept(
+                IN p_service_request_id BIGINT,
+                IN p_final_amount DECIMAL(10,2)
+            )
+            BEGIN
+                DECLARE v_professional_id BIGINT;
+
+                SELECT professional_id
+                INTO v_professional_id
+                FROM service_requests
+                WHERE id = p_service_request_id
+                LIMIT 1;
+
+                INSERT INTO service_orders (
+                    service_request_id,
+                    professional_id,
+                    created_at_custom,
+                    status,
+                    final_amount,
+                    created_at,
+                    updated_at
+                ) VALUES (
+                    p_service_request_id,
+                    v_professional_id,
+                    NOW(),
+                    'in_progress',
+                    p_final_amount,
+                    NOW(),
+                    NOW()
+                );
+            END;
+
+
+
+           CREATE TRIGGER after_service_created
+                        AFTER INSERT ON service_requests
+                        FOR EACH ROW
+                        BEGIN
+                            INSERT INTO notifications (
+                                user_id,
+                                title,
+                                message,
+                                type,
+                                extra_data,
+                                `read`,
+                                created_at,
+                                updated_at
+                            )
+                            SELECT u.id,
+                                'Novo serviço publicado',
+                                CONCAT('Eba! Um novo serviço já disponível: ', NEW.title),
+                                'info',
+                                NULL,
+                                false,
+                                NOW(),
+                                NOW()
+                            FROM users u
+                            WHERE u.user_type = 'Professional';
+                        END
+
+
+
+
+
+
+
+
+            CREATE TRIGGER after_service_order_insert
+            AFTER INSERT ON service_orders
+            FOR EACH ROW
+            BEGIN
+                DECLARE v_client_id BIGINT;
+                DECLARE v_professional_name VARCHAR(255);
+                DECLARE v_service_title VARCHAR(255);
+
+                -- Pega o client_id da solicitação
+                SELECT client_id
+                INTO v_client_id
+                FROM service_requests
+                WHERE id = NEW.service_request_id;
+
+                -- Pega o nome do profissional
+                SELECT name
+                INTO v_professional_name
+                FROM users
+                WHERE id = NEW.professional_id;
+
+                -- Pega o título do serviço
+                SELECT sr.title
+                INTO v_service_title
+                FROM services s
+                INNER JOIN service_requests sr ON sr.service_id = s.id
+                WHERE sr.id = NEW.service_request_id;
+
+                -- Insere a notificação para o cliente
+                INSERT INTO notifications (
+                    user_id,
+                    title,
+                    message,
+                    type,
+                    `read`,
+                    created_at,
+                    updated_at
+                ) VALUES (
+                    v_client_id,
+                    "Sua solicitação foi aceita!",
+                    CONCAT(v_professional_name, " aceitou sua solicitação para o serviço: ", v_service_title, "."),
+                    "info",
+                    false,
+                    NOW(),
+                    NOW()
+                );
+            END;
+
+
+
+
+            CREATE VIEW dashboard_summary AS
+            SELECT
+                (SELECT COUNT(*) FROM users) AS total_users,
+                (SELECT COUNT(*) FROM users WHERE user_type = 'Client') AS total_clients,
+                (SELECT COUNT(*) FROM users WHERE user_type = 'Professional') AS total_professionals,
+                (SELECT COUNT(*) FROM service_requests) AS total_service_requests
+
+
+           CREATE VIEW dashboard_growth AS
+                SELECT
+                    IFNULL(SUM(CASE WHEN MONTH(payment_date) = MONTH(CURRENT_DATE()) AND YEAR(payment_date) = YEAR(CURRENT_DATE()) THEN total_amount END), 0) AS current_month,
+                    IFNULL(SUM(CASE WHEN MONTH(payment_date) = MONTH(CURRENT_DATE() - INTERVAL 1 MONTH) AND YEAR(payment_date) = YEAR(CURRENT_DATE() - INTERVAL 1 MONTH) THEN total_amount END), 0) AS last_month,
+                    ROUND(
+                        CASE
+                            WHEN IFNULL(SUM(CASE WHEN MONTH(payment_date) = MONTH(CURRENT_DATE() - INTERVAL 1 MONTH) AND YEAR(payment_date) = YEAR(CURRENT_DATE() - INTERVAL 1 MONTH) THEN total_amount END), 0) = 0
+                                AND IFNULL(SUM(CASE WHEN MONTH(payment_date) = MONTH(CURRENT_DATE()) AND YEAR(payment_date) = YEAR(CURRENT_DATE()) THEN total_amount END), 0) > 0
+                            THEN IFNULL(SUM(CASE WHEN MONTH(payment_date) = MONTH(CURRENT_DATE()) AND YEAR(payment_date) = YEAR(CURRENT_DATE()) THEN total_amount END), 0) * 100
+                            WHEN IFNULL(SUM(CASE WHEN MONTH(payment_date) = MONTH(CURRENT_DATE() - INTERVAL 1 MONTH) AND YEAR(payment_date) = YEAR(CURRENT_DATE() - INTERVAL 1 MONTH) THEN total_amount END), 0) > 0
+                            THEN (
+                                (
+                                    IFNULL(SUM(CASE WHEN MONTH(payment_date) = MONTH(CURRENT_DATE()) AND YEAR(payment_date) = YEAR(CURRENT_DATE()) THEN total_amount END), 0)
+                                    -
+                                    IFNULL(SUM(CASE WHEN MONTH(payment_date) = MONTH(CURRENT_DATE() - INTERVAL 1 MONTH) AND YEAR(payment_date) = YEAR(CURRENT_DATE() - INTERVAL 1 MONTH) THEN total_amount END), 0)
+                                ) / IFNULL(SUM(CASE WHEN MONTH(payment_date) = MONTH(CURRENT_DATE() - INTERVAL 1 MONTH) AND YEAR(payment_date) = YEAR(CURRENT_DATE() - INTERVAL 1 MONTH) THEN total_amount END), 0)
+                            ) * 100
+                            ELSE 0
+                        END,
+                    2) AS growth_percentage,
+                    (SELECT SUM(available_balance) FROM users) AS total_available_balance
+                FROM service_payments
+                WHERE payment_status = 'approved';
+
+
+           CREATE VIEW user_type_totals AS
+            SELECT
+                SUM(CASE WHEN user_type = 'Client' THEN 1 ELSE 0 END) AS total_clients,
+                SUM(CASE WHEN user_type = 'Professional' THEN 1 ELSE 0 END) AS total_professionals
+            FROM users
+
